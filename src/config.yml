@@ -1,0 +1,39 @@
+sources:
+  - key: table1
+    path: C:\Users\Hafid\Documents\Projet\test2\src\data.csv
+    format: csv
+    options:
+      header: "true"
+      sep: ";"
+  - key: table2
+    path: C:\Users\Hafid\Documents\Projet\test2\src\target2/data2.csv
+    format: csv
+
+process:
+  - key: transformation1
+    query: |
+      SELECT *
+      FROM table1 t1
+      Where t1.table_catalog = '{$table_catalog}'
+  - key: transformation2
+    query: |
+      SELECT t2.*
+      FROM table2 t2
+      JOIN transformation1 t1 ON t1.columns_without_comment = t2.columns_without_comment
+
+sink:
+  - input: transformation1
+    path: D:\Projects\test2\src\result\transformation1
+    format: parquet
+    partitionKey:
+      - columns_without_comment
+    mode: overwrite
+  - input: transformation2
+    path: D:\Projects\test2\src\result\transformation3
+    format: csv
+    options:
+      header: "true"
+      sep: ";"
+    mode: append
+
+
